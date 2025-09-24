@@ -145,40 +145,27 @@
             display: flex;
         }
         #practice-page {
-            display: block;
-            display: flex; /* Make practice page a flex container */
+            display: flex; /* Changed from block to flex for card layout */
             flex-direction: column;
-            align-items: center; /* Center items horizontally */
+            align-items: center;
         }
 
-        /* Flashcard specific styling */
-        .flashcard-container {
+        /* Styles for the two new cards on the practice page */
+        .dual-card-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
             width: 100%;
-            max-width: 600px;
-            height: 200px;
-            perspective: 1000px;
-            margin: 0 auto;
+            max-width: 800px; /* Adjust max width as needed */
+            margin: 20px auto;
         }
 
-        .flashcard {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .flashcard.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .flashcard-side {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        .card {
+            background-color: #333;
             border-radius: 10px;
-            backface-visibility: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            width: 50%;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -188,15 +175,12 @@
             text-align: center;
         }
 
-        .flashcard-front {
-            background-color: #333;
+        .hebrew-card {
             direction: rtl;
             font-size: 60px; /* Specific font size for the Hebrew side */
         }
 
-        .flashcard-back {
-            background-color: #333;
-            transform: rotateY(180deg);
+        .english-card {
             direction: ltr;
         }
 
@@ -246,13 +230,11 @@
             <!-- Practice Page -->
             <div class="content-box hidden" id="practice-page">
                 <div id="flashcard-counter" class="flashcard-counter"></div>
-                <div class="flashcard-container">
-                    <div class="flashcard" id="flashcard">
-                        <div class="flashcard-side flashcard-front" id="flashcard-front"></div>
-                        <div class="flashcard-side flashcard-back" id="flashcard-back"></div>
-                    </div>
+                <div class="dual-card-container">
+                    <div class="card hebrew-card" id="hebrew-card"></div>
+                    <div class="card english-card" id="english-card"></div>
                 </div>
-                <button id="random-btn" class="random-btn">Random</button>
+                <button id="random-btn" class="random-btn">Next Word</button>
             </div>
     
             <div class="nav-arrow right-arrow">&gt;</div>
@@ -277,9 +259,8 @@
 
             // Define the words and their meanings as an array of objects
             let words = [];
-            const flashcard = document.getElementById('flashcard');
-            const flashcardFront = document.getElementById('flashcard-front');
-            const flashcardBack = document.getElementById('flashcard-back');
+            const hebrewCard = document.getElementById('hebrew-card');
+            const englishCard = document.getElementById('english-card');
             const randomBtn = document.getElementById('random-btn');
             const flashcardCounter = document.getElementById('flashcard-counter');
 
@@ -332,16 +313,9 @@
                 const randomIndex = Math.floor(Math.random() * words.length);
                 const randomWord = words[randomIndex];
                 
-                // Set text for both sides
-                flashcardFront.textContent = randomWord.hebrew;
-                flashcardBack.textContent = randomWord.english;
-
-                // Randomly show front or back first
-                if (Math.random() > 0.5) {
-                    flashcard.classList.add('flipped');
-                } else {
-                    flashcard.classList.remove('flipped');
-                }
+                // Set text for both new cards
+                hebrewCard.textContent = randomWord.hebrew;
+                englishCard.textContent = randomWord.english;
             }
 
             function updateUI() {
@@ -417,15 +391,10 @@
                 } else if (!practicePage.classList.contains('hidden')) {
                     if (event.key === 'Enter') {
                         renderFlashcard();
-                    } else if (event.key === ' ') { // Spacebar key
-                        flashcard.classList.toggle('flipped');
+                    } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+                        renderFlashcard();
                     }
                 }
-            });
-
-            // Flashcard functionality
-            flashcard.addEventListener('click', () => {
-                flashcard.classList.toggle('flipped');
             });
 
             randomBtn.addEventListener('click', () => {
